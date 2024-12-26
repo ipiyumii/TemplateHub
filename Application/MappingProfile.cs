@@ -13,7 +13,9 @@ namespace boilerplate_app.Application
                 .ReverseMap();
 
             CreateMap<User, RegisterDto>()
-                .ReverseMap();
+                .ReverseMap()
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore()) 
+                .ForMember(dest => dest.PasswordSalt, opt => opt.Ignore());
             //.ForMember(dest => dest.Id,opt => opt.Ignore());
         }
     }
