@@ -70,6 +70,8 @@ namespace boilerplate_app.Presentation.Controllers
                 return Unauthorized("Invalid username or password");
             }
 
+            var userDto = _mapper.Map<UserDto>(user);
+
             var jwtToken = _jwtService.GenerateJwtToken(user);
 
             // Return UserDto with token

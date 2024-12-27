@@ -4,6 +4,7 @@ using boilerplate_app.Application.Services;
 using boilerplate_app.Infrastructure.Data;
 using boilerplate_app.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -34,6 +35,13 @@ internal class Program
         //register dbcontext
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+        {
+            options.SignIn.RequireConfirmedAccount = true;
+        })
+        .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddDefaultTokenProviders();
 
         // Register AutoMapper in the DI container
         builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);

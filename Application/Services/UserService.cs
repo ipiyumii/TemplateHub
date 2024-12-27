@@ -6,6 +6,7 @@ using AutoMapper;
 using boilerplate_app.Application.DTOs;
 using boilerplate_app.Core.Entities;
 using boilerplate_app.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace boilerplate_app.Application.Services
@@ -16,7 +17,7 @@ namespace boilerplate_app.Application.Services
         public Task<UserDto> Login(LoginDto loginDto);
         public UserDto GetUser(string username);
         public  Task<User> SaveUsers(RegisterDto registerDto);
-        public User PasswordHash(RegisterDto registerDto);
+        //public User PasswordHash(RegisterDto registerDto);
     
     }
 
@@ -48,31 +49,36 @@ namespace boilerplate_app.Application.Services
             var user = await _userRepository.GetUserByUserNameAsync(loginDto.UserName);
             if (user == null) return null;
 
-            using var hmac = new HMACSHA512(user.PasswordSalt);
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
+            var passwordHasher = new PasswordHasher<User>();
+            var verificationResult = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, loginDto.Password);
 
-            for (int i = 0; i < computedHash.Length; i++)
-            {
-                if (computedHash[i] != user.PasswordHash[i]) return null;
-            }
+            if (verificationResult == PasswordVerificationResult.Failed)
+                return null;
 
             return _mapper.Map<UserDto>(user);
         }
 
-        public User PasswordHash(RegisterDto registerDto)
-        {
-            var user = _mapper.Map<User>(registerDto);
-            using var hmac = new HMACSHA512();
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
-            user.PasswordSalt = hmac.Key;
-            return user;
+        //public User PasswordHash(RegisterDto registerDto)
+        //{
+        //    var user = _mapper.Map<User>(registerDto);
+        //    var passwordHasher = new PasswordHasher<User>();
+        //    user.PasswordHash = passwordHasher.HashPassword(user, registerDto.Password);
+        //    return user;
 
-        }
+        //}
 
         public async Task<User> SaveUsers(RegisterDto registerDto)
         {
-            var user =  PasswordHash(registerDto);
+            //var user =  PasswordHash(registerDto);
+            //await _userRepository.SaveUser(user);
+            //return user;
+
+            var user = _mapper.Map<User>(registerDto);
+
+            var passwordHasher = new PasswordHasher<User>();
+            user.PasswordHash = passwordHasher.HashPassword(user, registerDto.Password);
             await _userRepository.SaveUser(user);
+
             return user;
         }
     }
