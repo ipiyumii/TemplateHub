@@ -15,10 +15,8 @@ namespace boilerplate_app.Application.Services
     {
         public Task<List<UserDto>> GetUsers();
         public Task<UserDto> Login(LoginDto loginDto);
-        public UserDto GetUser(string username);
         public  Task<User> SaveUsers(RegisterDto registerDto);
-        //public User PasswordHash(RegisterDto registerDto);
-    
+
     }
 
     public class UserService : IUserService
@@ -31,11 +29,6 @@ namespace boilerplate_app.Application.Services
             _userRepository = userRepository;
             _mapper = mapper;
            
-        }
-
-        public UserDto GetUser(string username)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<List<UserDto>> GetUsers()
@@ -57,15 +50,6 @@ namespace boilerplate_app.Application.Services
 
             return _mapper.Map<UserDto>(user);
         }
-
-        //public User PasswordHash(RegisterDto registerDto)
-        //{
-        //    var user = _mapper.Map<User>(registerDto);
-        //    var passwordHasher = new PasswordHasher<User>();
-        //    user.PasswordHash = passwordHasher.HashPassword(user, registerDto.Password);
-        //    return user;
-
-        //}
 
         public async Task<User> SaveUsers(RegisterDto registerDto)
         {

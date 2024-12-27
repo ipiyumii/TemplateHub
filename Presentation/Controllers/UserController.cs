@@ -45,17 +45,7 @@ namespace boilerplate_app.Presentation.Controllers
                 return BadRequest("user name exist");
             }
 
-            //var user = _mapper.Map<User>(registerDto);
-
             var user = await _userService.SaveUsers(registerDto);
-
-            //return new UserDto 
-            //{ 
-            //    UserName = registerDto.UserName,
-            //    Email = registerDto.Email,
-            //    FullName = $"{registerDto.FirstName} {registerDto.LastName}",
-            //    Password = registerDto.Password,
-            //};
 
             var userDto = _mapper.Map<UserDto>(user);
             return Ok(userDto);
