@@ -17,7 +17,7 @@ namespace boilerplate_app.Application.Services
         public Task<UserDto> Login(LoginDto loginDto);
         public  Task<User> SaveUsers(RegisterDto registerDto);
 
-    }
+    } 
 
     public class UserService : IUserService
     {

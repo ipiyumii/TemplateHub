@@ -43,6 +43,12 @@ internal class Program
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
 
+        //
+        builder.Services.AddAuthentication();
+        builder.Services.AddAuthorization();
+
+        builder.Services.AddControllers();
+
         // Register AutoMapper in the DI container
         builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 

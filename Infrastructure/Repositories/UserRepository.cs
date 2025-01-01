@@ -23,13 +23,21 @@ namespace boilerplate_app.Infrastructure.Repositories
             _context = context;
         }
 
-   
+        public void DeleteUser(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IEnumerable<User>> GetAll()
         {
             var users = await _context.Users.ToListAsync(); 
             return users;
         }
 
+        public User GetUserbyId(int id)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<User> GetUserByUserNameAsync(string username)
         {
@@ -42,6 +50,9 @@ namespace boilerplate_app.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-      
+        public void UpdateUser(User user)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
