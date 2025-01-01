@@ -1,6 +1,7 @@
 using System.Text;
 using boilerplate_app.Application;
 using boilerplate_app.Application.Services;
+using boilerplate_app.Core.Entities;
 using boilerplate_app.Infrastructure.Data;
 using boilerplate_app.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,13 +34,19 @@ internal class Program
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-        builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-        {
-            options.SignIn.RequireConfirmedAccount = true;
-        })
-        .AddEntityFrameworkStores<ApplicationDbContext>()
-        .AddDefaultTokenProviders();
 
+        // Register Identity services
+        //builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+        //{
+        //    options.SignIn.RequireConfirmedAccount = true;
+        //})
+        //.AddEntityFrameworkStores<ApplicationDbContext>()
+        //.AddDefaultTokenProviders();
+
+
+        builder.Services.AddIdentity<User, IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
         // 
         builder.Services.AddAuthentication();

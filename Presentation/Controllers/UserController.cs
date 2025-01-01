@@ -71,7 +71,12 @@ namespace boilerplate_app.Presentation.Controllers
             // Assign default role (User)
             await _userManager.AddToRoleAsync(user, "User");
 
-            return Ok(new { Message = "User registered successfully!" });
+            return Ok(new
+            {
+                Message = "User registered successfully!",
+                UserId = user.Id,
+                AssignedRole = "User"
+            });
         }
 
         [HttpPost("login")]
