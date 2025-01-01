@@ -1,8 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using AutoMapper;
+﻿using AutoMapper;
 using boilerplate_app.Application.DTOs;
 using boilerplate_app.Core.Entities;
 using boilerplate_app.Infrastructure.Repositories;

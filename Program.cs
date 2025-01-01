@@ -6,13 +6,10 @@ using boilerplate_app.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Swashbuckle.AspNetCore.SwaggerGen;
-
 internal class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -43,7 +40,8 @@ internal class Program
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
 
-        //
+
+        // 
         builder.Services.AddAuthentication();
         builder.Services.AddAuthorization();
 
@@ -77,6 +75,10 @@ internal class Program
         app.UseAuthorization();
 
         app.MapControllers();
+
+        var scope = app.Services.CreateScope();
+        await RoleSeeder.SeedRolesAsync(scope.ServiceProvider);
+
 
         app.Run();
     }

@@ -1,15 +1,12 @@
-﻿using System.Collections;
-using System.Runtime.Serialization.DataContracts;
+﻿
 using AutoMapper;
 using boilerplate_app.Application.DTOs;
 using boilerplate_app.Application.Services;
 using boilerplate_app.Core.Entities;
 using boilerplate_app.Infrastructure.Data;
-using boilerplate_app.Infrastructure.Repositories;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace boilerplate_app.Presentation.Controllers
 {
@@ -22,12 +19,14 @@ namespace boilerplate_app.Presentation.Controllers
         ApplicationDbContext _context;
         IMapper _mapper;
         IJwtService _jwtService;
-        public UserController(IUserService userService, IJwtService jwtService, ApplicationDbContext dbContext, IMapper mapper) 
+        UserManager<User> _userManager;
+        public UserController(IUserService userService, IJwtService jwtService, ApplicationDbContext dbContext, IMapper mapper, UserManager<User> userManager)
             {
                 _userService = userService;
                 _context = dbContext;
                 _mapper = mapper;
                 _jwtService = jwtService;
+                _userManager = userManager;
             }
 
         [HttpGet]
@@ -40,15 +39,39 @@ namespace boilerplate_app.Presentation.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
-           if(await UserExist(registerDto.UserName))
+            //if (await UserExist(registerDto.UserName))
+            //{
+            //    return BadRequest("user name exist");
+            //}
+
+            //var user = await _userService.SaveUsers(registerDto);
+
+            //var userDto = _mapper.Map<UserDto>(user);
+            //return Ok(userDto);
+
+            if (await _userManager.FindByNameAsync(registerDto.UserName) != null)
             {
-                return BadRequest("user name exist");
+                return BadRequest("User name already exists");
             }
 
-            var user = await _userService.SaveUsers(registerDto);
+            var user = new User
+            {
+                UserName = registerDto.UserName,
+                Email = registerDto.Email,
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName
+            };
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
 
-            var userDto = _mapper.Map<UserDto>(user);
-            return Ok(userDto);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            // Assign default role (User)
+            await _userManager.AddToRoleAsync(user, "User");
+
+            return Ok(new { Message = "User registered successfully!" });
         }
 
         [HttpPost("login")]

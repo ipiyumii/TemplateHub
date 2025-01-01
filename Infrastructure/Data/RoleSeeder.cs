@@ -12,7 +12,7 @@ namespace boilerplate_app.Infrastructure.Data
 
             foreach (var role in roles)
             {
-                if (!await RoleManager.ExistsAsync(role))
+                if (!await roleManager.RoleExistsAsync(role))
                 {
                     await roleManager.CreateAsync(new IdentityRole(role));
                 }
@@ -20,3 +20,4 @@ namespace boilerplate_app.Infrastructure.Data
         }
     }
 }
+ 
