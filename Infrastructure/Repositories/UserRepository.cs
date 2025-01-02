@@ -10,7 +10,7 @@ namespace boilerplate_app.Infrastructure.Repositories
     {
         Task<IEnumerable<User>> GetAll();
         User GetUserbyId(int id);
-        Task SaveUser(User user);
+       
         void DeleteUser(int id);
         void UpdateUser(User user);
         Task<User> GetUserByUserNameAsync(string username);
@@ -45,11 +45,7 @@ namespace boilerplate_app.Infrastructure.Repositories
             return await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
         }
 
-        public async Task SaveUser(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-        }
+    
 
         public void UpdateUser(User user)
         {

@@ -58,8 +58,6 @@ namespace boilerplate_app.Application.Services
                 return null;
             }
 
-            //var user = _mapper.Map<User>(registerDto);
-
             var user = new User
             {
                 UserName = registerDto.UserName,
