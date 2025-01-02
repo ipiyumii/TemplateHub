@@ -26,8 +26,8 @@ namespace boilerplate_app.Presentation.Controllers
                 _context = dbContext;
                 _mapper = mapper;
                 _jwtService = jwtService;
-                _userManager = userManager;
-            }
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
@@ -39,43 +39,18 @@ namespace boilerplate_app.Presentation.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
-            //if (await UserExist(registerDto.UserName))
-            //{
-            //    return BadRequest("user name exist");
-            //}
 
-            //var user = await _userService.SaveUsers(registerDto);
+            var user = await _userService.RegisterUser(registerDto);
 
-            //var userDto = _mapper.Map<UserDto>(user);
-            //return Ok(userDto);
+            if (user == null) return BadRequest("Registration failed");
+            
 
-            if (await _userManager.FindByNameAsync(registerDto.UserName) != null)
+
+            return Ok(new UserDto
             {
-                return BadRequest("User name already exists");
-            }
-
-            var user = new User
-            {
-                UserName = registerDto.UserName,
-                Email = registerDto.Email,
-                FirstName = registerDto.FirstName,
-                LastName = registerDto.LastName
-            };
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
-
-            if (!result.Succeeded)
-            {
-                return BadRequest(result.Errors);
-            }
-
-            // Assign default role (User)
-            await _userManager.AddToRoleAsync(user, "User");
-
-            return Ok(new
-            {
-                Message = "User registered successfully!",
-                UserId = user.Id,
-                AssignedRole = "User"
+                UserName = user.UserName,
+                FullName = user.FullName,
+                Email = user.Email
             });
         }
 

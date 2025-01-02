@@ -2,6 +2,7 @@
 using boilerplate_app.Application.DTOs;
 using boilerplate_app.Core.Entities;
 using boilerplate_app.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -11,7 +12,7 @@ namespace boilerplate_app.Application.Services
     {
         public Task<List<UserDto>> GetUsers();
         public Task<UserDto> Login(LoginDto loginDto);
-        public  Task<User> SaveUsers(RegisterDto registerDto);
+        public  Task<UserDto> RegisterUser(RegisterDto registerDto);
 
     } 
 
@@ -19,12 +20,13 @@ namespace boilerplate_app.Application.Services
     {
         IUserRepository _userRepository;
         IMapper _mapper;
+        UserManager<User> _userManager;
 
-        public UserService(IUserRepository userRepository, IMapper mapper)
+        public UserService(IUserRepository userRepository, IMapper mapper, UserManager<User> userManager)
         {
             _userRepository = userRepository;
             _mapper = mapper;
-           
+            _userManager = userManager;
         }
 
         public async Task<List<UserDto>> GetUsers()
@@ -47,19 +49,38 @@ namespace boilerplate_app.Application.Services
             return _mapper.Map<UserDto>(user);
         }
 
-        public async Task<User> SaveUsers(RegisterDto registerDto)
+        public async Task<UserDto> RegisterUser(RegisterDto registerDto)
         {
-            //var user =  PasswordHash(registerDto);
+            var existUser = await _userManager.FindByNameAsync(registerDto.UserName);
+
+            if (existUser != null)
+            {
+                return null;
+            }
+
+            //var user = _mapper.Map<User>(registerDto);
+
+            var user = new User
+            {
+                UserName = registerDto.UserName,
+                Email = registerDto.Email,
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName
+            };
+
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
+
+            if (!result.Succeeded)
+            {
+                return null;
+            }
+
+            await _userManager.AddToRoleAsync(user, "User");
+
+            // Save the user to the database
             //await _userRepository.SaveUser(user);
-            //return user;
 
-            var user = _mapper.Map<User>(registerDto);
-
-            var passwordHasher = new PasswordHasher<User>();
-            user.PasswordHash = passwordHasher.HashPassword(user, registerDto.Password);
-            await _userRepository.SaveUser(user);
-
-            return user;
+            return _mapper.Map<UserDto>(user);
         }
     }
 }
