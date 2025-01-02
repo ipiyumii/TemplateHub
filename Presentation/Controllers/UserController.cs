@@ -82,15 +82,30 @@ namespace boilerplate_app.Presentation.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            var user = await _userService.Login(loginDto);
-            if(user == null)
+            var userDto = await _userService.Login(loginDto);
+            if(userDto == null)
             {
                 return Unauthorized("Invalid username or password");
             }
 
-            var userDto = _mapper.Map<UserDto>(user);
+            // Fetch the User entity using the UserManager
+            var user = await _userManager.FindByNameAsync(userDto.UserName);
+            if(user == null)
+             {
+                return Unauthorized("Invalid username or password");
+            }
 
-            var jwtToken = _jwtService.GenerateJwtToken(user);
+            // Fetch user roles using UserManager
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles == null)
+            {
+                roles = new List<string>(); 
+            }
+
+            //var userDto = _mapper.Map<UserDto>(user);
+
+           
+            var jwtToken = _jwtService.GenerateJwtToken(user, roles);
 
             // Return UserDto with token
             return Ok(new

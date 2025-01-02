@@ -3,7 +3,7 @@ using boilerplate_app.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNet.Identity;
+
 
 namespace boilerplate_app.Presentation.Controllers
 {
@@ -14,9 +14,11 @@ namespace boilerplate_app.Presentation.Controllers
     public class RolesController : ControllerBase
     {
         UserManager<User> _userManager;
-        public RolesController(UserManager<User> userManager) 
+        RoleManager<IdentityRole> _roleManager;
+        public RolesController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager) 
         {
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpPost("assign-role")]
@@ -30,7 +32,19 @@ namespace boilerplate_app.Presentation.Controllers
                 return NotFound("User not found");
             }
 
-            if ()
+            if (!await _roleManager.RoleExistsAsync(assignRoleDto.Role))
+            {
+                return BadRequest("Role does not exist");
+            }
+
+            var result = await _userManager.AddToRoleAsync(user, assignRoleDto.Role);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok($"Role '{assignRoleDto.Role}' assigned to user '{assignRoleDto.UserName}' successfully.");
         }
 
 

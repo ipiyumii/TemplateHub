@@ -1,5 +1,6 @@
 ﻿using boilerplate_app.Application.DTOs;
 using boilerplate_app.Core.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -9,7 +10,7 @@ namespace boilerplate_app.Application.Services
 {
     public interface IJwtService
     {
-        public string GenerateJwtToken(UserDto user);
+        public string GenerateJwtToken(IdentityUser user, IList<string> roles);
     }
     public class JwtService : IJwtService
     {
@@ -20,7 +21,7 @@ namespace boilerplate_app.Application.Services
             _configuration = configuration;
         }
 
-        public string GenerateJwtToken(UserDto user)
+        public string GenerateJwtToken(IdentityUser user, IList<string> roles)
         {
             var keyValue = _configuration["JwtSettings:Key"];
             if (string.IsNullOrEmpty(keyValue))
@@ -34,13 +35,16 @@ namespace boilerplate_app.Application.Services
             var userName = user.UserName ?? throw new ArgumentNullException("User name is missing.");
             var email = user.Email ?? throw new ArgumentNullException("Email is missing.");
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, userName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Name, userName),
                 new Claim(ClaimTypes.Email, email)
             };
+
+            // Add roles to claims
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var expireMinutesStr = _configuration["JwtSettings:ExpireMinutes"];
             if (!double.TryParse(expireMinutesStr, out double expireMinutes))
