@@ -39,7 +39,7 @@ internal class Program
 
         builder.Services.AddIdentity<User, IdentityRole>(options =>
         {
-            options.SignIn.RequireConfirmedAccount = true;
+            options.SignIn.RequireConfirmedAccount = false;
         })
         .AddRoles<IdentityRole>()
         .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -87,7 +87,7 @@ internal class Program
 
         var scope = app.Services.CreateScope();
         await RoleSeeder.SeedRolesAsync(scope.ServiceProvider);
-
+        await RoleSeeder.SeedAdminAsync(scope.ServiceProvider);
 
         //seeding
         //using (var scope = app.Services.CreateScope()) 
