@@ -15,6 +15,7 @@ namespace boilerplate_app.Infrastructure.Data
                 if (!await roleManager.RoleExistsAsync(role))
                 {
                     await roleManager.CreateAsync(new IdentityRole(role));
+
                 }
             }
         }
