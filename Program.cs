@@ -36,17 +36,19 @@ internal class Program
 
 
         // Register Identity services
-        //builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-        //{
-        //    options.SignIn.RequireConfirmedAccount = true;
-        //})
-        //.AddEntityFrameworkStores<ApplicationDbContext>()
-        //.AddDefaultTokenProviders();
+
+        builder.Services.AddIdentity<User, IdentityRole>(options =>
+        {
+            options.SignIn.RequireConfirmedAccount = true;
+        })
+        .AddRoles<IdentityRole>()
+        .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddDefaultTokenProviders();
 
 
-        builder.Services.AddIdentity<User, IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
+        //builder.Services.AddIdentity<User, IdentityRole>()
+        //    .AddEntityFrameworkStores<ApplicationDbContext>()
+        //    .AddDefaultTokenProviders();
 
         // 
         builder.Services.AddAuthentication();
@@ -86,6 +88,12 @@ internal class Program
         var scope = app.Services.CreateScope();
         await RoleSeeder.SeedRolesAsync(scope.ServiceProvider);
 
+
+        //seeding
+        //using (var scope = app.Services.CreateScope()) 
+        //{ 
+
+        //}
 
         app.Run();
     }
