@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using boilerplate_app.Core.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace boilerplate_app.Infrastructure.Data
 {
@@ -22,16 +23,19 @@ namespace boilerplate_app.Infrastructure.Data
 
         public static async Task SeedAdminAsync(IServiceProvider serviceProvider)
         {
-            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 
             string email = "admin@gmail.com";
-            string password = "password12@";
+            string password = "Password12@";
 
             if (await userManager.FindByEmailAsync(email) == null)
             {
-                var user = new IdentityUser();
-                user.UserName = email;
-                user.Email = email;
+                var user = new User
+                {
+                    UserName = email,
+                    Email = email,
+                    FirstName = "Admin"
+                };
 
                 await userManager.CreateAsync(user, password);
                 await userManager.AddToRoleAsync(user, "Admin");

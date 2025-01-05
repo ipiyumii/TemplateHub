@@ -4,6 +4,7 @@ using boilerplate_app.Application.DTOs;
 using boilerplate_app.Application.Services;
 using boilerplate_app.Core.Entities;
 using boilerplate_app.Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ namespace boilerplate_app.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
+   
     public class UserController : ControllerBase
     {
         IUserService _userService;
@@ -54,6 +55,7 @@ namespace boilerplate_app.Presentation.Controllers
             });
         }
 
+        [Authorize(Roles = "User")]
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
