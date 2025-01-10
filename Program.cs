@@ -14,6 +14,7 @@ internal class Program
     private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        const string policyName = "CorsPolicy";
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
@@ -55,6 +56,15 @@ internal class Program
         builder.Services.AddAuthentication();
         builder.Services.AddAuthorization();
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", policy =>
+                policy.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader());
+        });
+
+
         builder.Services.AddControllers();
 
         // Register AutoMapper in the DI container
@@ -86,6 +96,7 @@ internal class Program
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseCors("AllowAll");
 
         app.MapControllers();
 
