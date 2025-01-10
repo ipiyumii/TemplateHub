@@ -30,6 +30,7 @@ namespace boilerplate_app.Presentation.Controllers
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {

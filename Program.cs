@@ -4,6 +4,7 @@ using boilerplate_app.Application.Services;
 using boilerplate_app.Core.Entities;
 using boilerplate_app.Infrastructure.Data;
 using boilerplate_app.Infrastructure.Repositories;
+using boilerplate_app.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -78,6 +79,9 @@ internal class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        // Global error handler
+        app.UseMiddleware<ErrorHandelingMiddleware >();
 
         app.UseHttpsRedirection();
         app.UseAuthentication();
